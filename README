@@ -1,0 +1,44 @@
+UtilSY version 0.0.1
+
+Scott's set of utility functions.  These are general functions that I tend to
+use in many different circumstances.
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+
+DEPENDENCIES
+
+-- Perl Libraries --
+warnings
+strict
+Readonly
+Class::Std::Utils
+List::MoreUtils qw(any)
+Log::Log4perl qw(:easy)
+Log::Log4perl::CommandLine qw(:all)
+MyX::Generic
+version our $VERSION = qv('0.0.1')
+Exporter qw( import )
+
+
+FUNCTIONS
+
+is_defined
+to_bool
+check_ref
+check_file
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2016, Scott Yourstone
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
