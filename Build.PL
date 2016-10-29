@@ -4,7 +4,7 @@ use Module::Build;
 
 my $builder = Module::Build->new(
     module_name         => 'UtilSY',
-    license             => 'artistic2',
+    license             => 'unknown',
     dist_author         => 'Scott Yourstone <scott.yourstone.com>',
     dist_version_from   => 'lib/UtilSY.pm',
     requires => {

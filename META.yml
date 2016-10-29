@@ -1,0 +1,22 @@
+---
+abstract: "Scott Yourstone's utility functions"
+author:
+  - 'Scott Yourstone <scott.yourstone.com>'
+build_requires: {}
+configure_requires:
+  Module::Build: '0.40'
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4007, CPAN::Meta::Converter version 2.150001'
+license: unknown
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: '1.4'
+name: UtilSY
+provides:
+  UtilSY:
+    file: lib/UtilSY.pm
+    version: v0.0.1
+requires:
+  Test::More: '0'
+  version: '0'
+version: v0.0.1
