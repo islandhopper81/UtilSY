@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 27;
 use Test::Exception;
 
 # others to include
@@ -29,6 +29,8 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 {
     throws_ok( sub{ to_bool() },
               'MyX::Generic::Undef::Param', "throws -- to_bool()" );
+    throws_ok( sub{ to_bool("blah") },
+              'MyX::Generic::BadValue', "throws -- to_bool(blah)" );
     
     is( to_bool(1), 1, "to_bool(1)" );
     is( to_bool(0), 0, "to_bool(0)" );

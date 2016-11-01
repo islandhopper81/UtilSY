@@ -4,7 +4,7 @@
       "Scott Yourstone <scott.yourstone.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4007, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Module::Build version 0.4007, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "unknown"
    ],
@@ -14,6 +14,11 @@
    },
    "name" : "UtilSY",
    "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.40"
+         }
+      },
       "runtime" : {
          "requires" : {
             "Test::More" : "0",
@@ -28,5 +33,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "v0.0.1"
+   "version" : "v0.0.1",
+   "x_serialization_backend" : "JSON::PP version 2.27400"
 }

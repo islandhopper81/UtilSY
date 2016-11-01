@@ -4,6 +4,7 @@ use warnings;
 use strict;
 use Readonly;
 use Class::Std::Utils;
+use Data::Dumper;
 use List::MoreUtils qw(any);
 use Log::Log4perl qw(:easy);
 use Log::Log4perl::CommandLine qw(:all);
@@ -76,18 +77,17 @@ my $logger = get_logger();
 		my $bool = "NA";
      
         my %good_yes_values = map { $_ => 1 } qw(Y YES T TRUE );
+		my %good_no_values = map {$_ => 1 } qw(N NO F FALSE );
+
         if ( defined $good_yes_values{$val} ) {
             $bool = 1;   # TRUE
         }
-		
-		my %good_no_values = map {$_ => 1 } qw(N NO F FALSE );
-		if ( defined $good_no_values{$val} ) {
+		elsif ( defined $good_no_values{$val} ) {
 			$bool = 0;   # FALSE
 		}
-		
-		if ( $bool != 0 or $bool != 1 ) {
+		else {
 			MyX::Generic::BadValue->throw(
-				error => "Doesn't look like a boolean value: $val"
+				error => "Doesn't look like a boolean value: $bool"
 			);
 		}
 		
