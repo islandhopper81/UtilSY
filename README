@@ -20,6 +20,7 @@ warnings
 strict
 Readonly
 Class::Std::Utils
+Data::Dumper
 List::MoreUtils qw(any)
 Log::Log4perl qw(:easy)
 Log::Log4perl::CommandLine qw(:all)
