@@ -150,11 +150,10 @@ This document describes UtilSY version 0.0.1
 
 =head1 SYNOPSIS
 
-    use UtilSY qw(:all);
+use UtilSY qw(:all);
 	
-	# Or you can load and use the functions individually. E.g.
-	use UtilSY qw(is_defined);
-  
+# Or you can load and use the functions individually. E.g.
+use UtilSY qw(is_defined);
   
 =head1 DESCRIPTION
 
@@ -170,16 +169,16 @@ UtilSY requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
-warnings
-strict
-Readonly
-Class::Std::Utils
-List::MoreUtils qw(any)
-Log::Log4perl qw(:easy)
-Log::Log4perl::CommandLine qw(:all)
-MyX::Generic
-version our $VERSION = qv('0.0.1')
-Exporter qw( import )
+	warnings
+	strict
+	Readonly
+	Class::Std::Utils
+	List::MoreUtils qw(any)
+	Log::Log4perl qw(:easy)
+	Log::Log4perl::CommandLine qw(:all)
+	MyX::Generic
+	version our $VERSION = qv('0.0.1')
+	Exporter qw( import )
 
 
 =head1 INCOMPATIBILITIES
