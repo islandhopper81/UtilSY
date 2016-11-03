@@ -9,7 +9,7 @@ use List::MoreUtils qw(any);
 use Log::Log4perl qw(:easy);
 use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
 our @EXPORT_OK = qw( is_defined to_bool check_ref check_file );
 our %EXPORT_TAGS = (
@@ -145,7 +145,7 @@ UtilSY - Scott Yourstone's utility functions
 
 =head1 VERSION
 
-This document describes UtilSY version 0.0.1
+This document describes UtilSY version 0.0.2
 
 
 =head1 SYNOPSIS
@@ -177,7 +177,7 @@ UtilSY requires no configuration files or environment variables.
 	Log::Log4perl qw(:easy)
 	Log::Log4perl::CommandLine qw(:all)
 	MyX::Generic
-	version our $VERSION = qv('0.0.1')
+	version our $VERSION = qv('0.0.2')
 	Exporter qw( import )
 
 

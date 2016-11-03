@@ -1,4 +1,4 @@
-UtilSY version 0.0.1
+UtilSY version 0.0.2
 
 Scott's set of utility functions.  These are general functions that I tend to
 use in many different circumstances.
@@ -25,7 +25,7 @@ List::MoreUtils qw(any)
 Log::Log4perl qw(:easy)
 Log::Log4perl::CommandLine qw(:all)
 MyX::Generic
-version our $VERSION = qv('0.0.1')
+version our $VERSION = qv('0.0.2')
 Exporter qw( import )
 
 

@@ -29,9 +29,9 @@
    "provides" : {
       "UtilSY" : {
          "file" : "lib/UtilSY.pm",
-         "version" : "v0.0.1"
+         "version" : "v0.0.2"
       }
    },
    "release_status" : "stable",
-   "version" : "v0.0.1"
+   "version" : "v0.0.2"
 }

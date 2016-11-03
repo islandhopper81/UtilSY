@@ -15,8 +15,8 @@ name: UtilSY
 provides:
   UtilSY:
     file: lib/UtilSY.pm
-    version: v0.0.1
+    version: v0.0.2
 requires:
   Test::More: '0'
   version: '0'
-version: v0.0.1
+version: v0.0.2
