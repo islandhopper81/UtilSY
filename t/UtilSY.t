@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 33;
+use Test::More tests => 32;
 use Test::Exception;
 
 # others to include
@@ -17,14 +17,12 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 
 # test is_defined
 {
-    throws_ok( sub{ is_defined() },
-            'MyX::Generic::Undef::Param', "throws_ok is_defined()" );
-    lives_ok( sub{ is_defined(undef, "val_name") },
-              "lives - is_defined(undef, val_name)" );
-    is( is_defined(undef, "val_name"), 0, "is_defined(undef, val_name)" );
-    lives_ok( sub{ is_defined("val", "val_name") },
-             "expected to live -- is_defined(val, val_name)" );
-    is( is_defined("val", "val_name"), 1, "is_defined(val, val_name)" );
+    lives_ok( sub{ is_defined(undef) },
+              "lives - is_defined(undef)" );
+    is( is_defined(undef), 0, "is_defined(undef)" );
+    lives_ok( sub{ is_defined("val") },
+             "expected to live -- is_defined(val)" );
+    is( is_defined("val"), 1, "is_defined(val)" );
 }
 
 # test check_defined

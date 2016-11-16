@@ -45,15 +45,7 @@ my $logger = get_logger();
 	# Functions #
 	#############
 	sub is_defined {
-		my ($val, $val_name) = @_;
-		
-		# sometimes I forget that a val_name should be passed into this function
-		if ( ! defined $val_name ) {
-			$val_name = "remember to pass a val_name to is_defined";
-			MyX::Generic::Undef::Param->throw(
-				error => "Undefined parameter value ($val_name)"
-			);
-		}
+		my ($val) = @_;
 		
 		if ( ! defined $val ) {
 			return 0;
@@ -66,11 +58,11 @@ my $logger = get_logger();
 		my ($val, $val_name) = @_;
 		
 		# sometimes I forget that a val_name should be passed into this function
-		if ( ! defined $val_name ) {
+		if ( ! is_defined($val_name) ) {
 			$val_name = "remember to pass a val_name to check_defined";
 		}
 		
-		if (! is_defined($val, $val_name) ) {
+		if (! is_defined($val) ) {
 			MyX::Generic::Undef::Param->throw(
 				error => "Undefined parameter value ($val_name)"
 			);
