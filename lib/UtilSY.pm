@@ -11,7 +11,7 @@ use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = qw( is_defined to_bool check_ref check_file );
+our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file );
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -28,6 +28,7 @@ my $logger = get_logger();
 	
 	# Functions #
 	sub is_defined;
+	sub check_defined;
 	sub to_bool;
 	sub check_ref;
 	sub check_file;
@@ -49,9 +50,27 @@ my $logger = get_logger();
 		# sometimes I forget that a val_name should be passed into this function
 		if ( ! defined $val_name ) {
 			$val_name = "remember to pass a val_name to is_defined";
+			MyX::Generic::Undef::Param->throw(
+				error => "Undefined parameter value ($val_name)"
+			);
 		}
 		
 		if ( ! defined $val ) {
+			return 0;
+		}
+		
+		return 1;
+	}
+	
+	sub check_defined {
+		my ($val, $val_name) = @_;
+		
+		# sometimes I forget that a val_name should be passed into this function
+		if ( ! defined $val_name ) {
+			$val_name = "remember to pass a val_name to check_defined";
+		}
+		
+		if (! is_defined($val, $val_name) ) {
 			MyX::Generic::Undef::Param->throw(
 				error => "Undefined parameter value ($val_name)"
 			);
@@ -64,7 +83,7 @@ my $logger = get_logger();
 		my ($val) = @_;
 		
 		# make sure val is defined
-		is_defined($val, "boolean value");
+		check_defined($val, "boolean value");
 		
 		# quick check to see if it is already a valid boolean
         if ( $val eq 1 or $val eq 0 ) {
@@ -97,8 +116,8 @@ my $logger = get_logger();
 	sub check_ref {
 		my ($ref, $type) = @_;
 		
-		is_defined($ref, "object reference");
-		is_defined($type, "object type");
+		check_defined($ref, "object reference");
+		check_defined($type, "object type");
 		
 		if ( ref($ref) ne $type ) {
 			MyX::Generic::Ref::UnsupportedType->throw(
@@ -113,7 +132,7 @@ my $logger = get_logger();
 		my ($file) = @_;
 		
 		# check if the file parameter is defined
-		is_defined($file, "file");
+		check_defined($file, "file");
 		
 		# check if the file exists
 		if ( ! -f $file ) {
@@ -191,6 +210,7 @@ None reported.
 =over
 
 	is_defined
+	check_defined
 	to_bool
 	check_ref
 	check_file
@@ -204,11 +224,23 @@ None reported.
 	Title: is_defined
 	Usage: is_defined($val, $val_name)
 	Function: checks if a value is defined
+	Returns: boolean (ie 0 or 1)
+	Args: -val => value to check
+	      -val_name => name of value (for print error message)
+	Throws: NA
+	Comments: This function will NOT throw a warning if the value is not defined
+	See Also: NA
+	
+=head2 check_defined
+
+	Title: check_defined
+	Usage: check_defined($val, $val_name)
+	Function: checks if a value is defined
 	Returns: 1 on success
 	Args: -val => value to check
 	      -val_name => name of value (for print error message)
 	Throws: MyX::Generic::Undef::Param
-	Comments: NA
+	Comments: This function WILL throw a warning if the value is not defined
 	See Also: NA
 	
 =head2 to_bool

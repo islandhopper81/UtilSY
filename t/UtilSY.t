@@ -1,13 +1,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 27;
+use Test::More tests => 33;
 use Test::Exception;
 
 # others to include
 use File::Temp qw/ tempfile tempdir /;
 
 BEGIN { use_ok( 'UtilSY', qw(is_defined) ); }
+BEGIN { use_ok( 'UtilSY', qw(check_defined) ); }
 BEGIN { use_ok( 'UtilSY', qw(to_bool) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_ref) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_file) ); }
@@ -18,10 +19,22 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 {
     throws_ok( sub{ is_defined() },
             'MyX::Generic::Undef::Param', "throws_ok is_defined()" );
-    throws_ok( sub{ is_defined(undef, "val_name") },
+    lives_ok( sub{ is_defined(undef, "val_name") },
+              "lives - is_defined(undef, val_name)" );
+    is( is_defined(undef, "val_name"), 0, "is_defined(undef, val_name)" );
+    lives_ok( sub{ is_defined("val", "val_name") },
+             "expected to live -- is_defined(val, val_name)" );
+    is( is_defined("val", "val_name"), 1, "is_defined(val, val_name)" );
+}
+
+# test check_defined
+{
+    throws_ok( sub{ check_defined() },
+            'MyX::Generic::Undef::Param', "throws_ok is_defined()" );
+    throws_ok( sub{ check_defined(undef, "val_name") },
               'MyX::Generic::Undef::Param',
               "throws_ok is_defined(undef, val_name)" );
-    lives_ok( sub{ is_defined("val", "val_name") },
+    lives_ok( sub{ check_defined("val", "val_name") },
              "expected to live -- is_defined(val, val_name)" );
 }
 
