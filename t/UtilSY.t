@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 32;
+use Test::More tests => 39;
 use Test::Exception;
 
 # others to include
@@ -12,6 +12,7 @@ BEGIN { use_ok( 'UtilSY', qw(check_defined) ); }
 BEGIN { use_ok( 'UtilSY', qw(to_bool) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_ref) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_file) ); }
+BEGIN { use_ok( 'UtilSY', qw(load_lines) ); }
 BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 
 
@@ -84,6 +85,31 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
     close($temp_fh);
     lives_ok( sub{ check_file($temp_file) },
              "expected to live -- check_file(temp_file)" );
+}
+
+# test load_lines
+{
+    throws_ok( sub{ load_lines() },
+              'MyX::Generic::Undef::Param', "throws -- load_lines()" );
+    throws_ok( sub{ load_lines("blah") },
+              'MyX::Generic::DoesNotExist::File',
+              "throws -- load_lines(blah)" );
+    
+    my ($temp_fh, $temp_file) = tempfile();
+    throws_ok( sub{ load_lines($temp_file) },
+              'MyX::Generic::File::Empty',
+              "throws -- load_lines(temp_file)" );
+    
+    print $temp_fh "row1\t1\n";
+    print $temp_fh "row2\t2\n";
+    close($temp_fh);
+    my @exp = ("row1\t1", "row2\t2");
+    lives_ok( sub{ load_lines($temp_file) },
+             "expected to live -- load_lines(temp_file)" );
+    is_deeply(load_lines($temp_file), \@exp, "load_lines(temp_file) -- no sep" );
+    
+    @exp = ("row1", "row2");
+    is_deeply(load_lines($temp_file, "\t"), \@exp, "load_lines(temp_file) -- tab sep" );
 }
 
 

@@ -11,7 +11,7 @@ use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file );
+our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines);
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -32,6 +32,7 @@ my $logger = get_logger();
 	sub to_bool;
 	sub check_ref;
 	sub check_file;
+	sub load_lines;
 
 
 
@@ -143,6 +144,31 @@ my $logger = get_logger();
 		return 1;
 	}
 	
+	sub load_lines {
+		my ($file, $sep) = @_;
+		
+		check_file($file);
+		
+		open my $IN, "<", $file;
+			# or throw error
+		
+		my @arr = ();
+		
+		foreach my $line ( <$IN> ) {
+			chomp $line;
+			
+			if ( is_defined($sep) ) {
+				my @vals = split(/$sep/, $line);
+				push @arr, $vals[0];
+			}
+			else {
+				push @arr, $line
+			}
+		}
+		
+		return(\@arr);
+	}
+	
 
 }
 
@@ -206,6 +232,7 @@ None reported.
 	to_bool
 	check_ref
 	check_file
+	load_lines
 
 =back
 
@@ -272,6 +299,24 @@ None reported.
 	        MyX::Generic::DoesNotExist::File
 			MyX::Generic::File::Empty
 	Comments: NA
+	See Also: NA
+	
+=head2 load_lines
+
+	Title: load_lines
+	Usage: load_lines($file, $sep)
+	Function: loads an array from a file
+	Returns: array ref
+	Args: -file => file name or path
+	      [-sep => delimiter]
+	Throws: MyX::Generic::Undef::Param
+	        MyX::Generic::DoesNotExist::File
+			MyX::Generic::File::Empty
+	Comments: This function does the common operation of loading the lines of a
+	          file into an array.  The $sep parameter is optional and when
+			  specified it does not return anything in the line past the first
+			  instance of $sep.  This can be useful when you have a table and
+			  only want to load the first column (ie the row names).
 	See Also: NA
 
 
