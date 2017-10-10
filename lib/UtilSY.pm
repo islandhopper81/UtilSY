@@ -11,7 +11,7 @@ use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines);
+our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines aref_to_href href_to_aref);
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -33,6 +33,8 @@ my $logger = get_logger();
 	sub check_ref;
 	sub check_file;
 	sub load_lines;
+	sub aref_to_href;
+	sub href_to_aref;
 
 
 
@@ -169,7 +171,54 @@ my $logger = get_logger();
 		return(\@arr);
 	}
 	
-
+	sub aref_to_href {
+		my ($aref, $val) = @_;
+		
+		check_defined($aref);
+		check_ref($aref, "ARRAY");
+		
+		if ( ! is_defined($val) ) {
+			$val = 1;
+		}
+		
+		my %hash = ();
+		
+		foreach my $e ( @{$aref} ) {
+			$hash{$e} = $val;
+		}
+		
+		return(\%hash);
+	}
+	
+	sub href_to_aref {
+		my ($href, $vals) = @_;
+		# vals is a boolean indicating the the values should be returned
+		# as opposed to the hash keys
+		
+		# note that the order of the returned aref is random
+		
+		check_defined($href);
+		check_ref($href, "HASH");
+		
+		if ( is_defined($vals) ) {
+			$vals = to_bool($vals);
+		}
+		else {
+			$vals = 0; # the default is to return the keys. so this is set to F
+		}
+		
+		my @arr;
+		if ( $vals == 0 ) {
+			# return the keys
+			@arr = keys %{$href};
+		}
+		else {
+			# return the values
+			@arr = values %{$href};
+		}
+		
+		return(\@arr);
+	}
 }
 
 1; # Magic true value required at end of module
@@ -233,6 +282,8 @@ None reported.
 	check_ref
 	check_file
 	load_lines
+	aref_to_href
+	href_to_aref
 
 =back
 
@@ -317,6 +368,31 @@ None reported.
 			  specified it does not return anything in the line past the first
 			  instance of $sep.  This can be useful when you have a table and
 			  only want to load the first column (ie the row names).
+	See Also: NA
+	
+=head2 aref_to_href
+
+	Title: aref_to_href
+	Usage: aref_to_href($aref, $val)
+	Function: Converts the contents of an array reference to a hash reference
+	Returns: hash ref
+	Args: -aref => array reference
+	      [-val => value to be associated with each key in the href]
+	Throws: MyX::Generic::Undef::Param
+	Comments: The defualt $val is 1.  Note that each key in the href will be set
+			  to val.
+	See Also: NA
+	
+=head2 href_to_aref
+
+	Title: href_to_aref
+	Usage: href_to_aref($aref, $vals)
+	Function: Converts the contents of a hash reference to an array reference
+	Returns: array ref
+	Args: -href => hash reference
+	      [-vals => boolean indicating to return the values instead of keys]
+	Throws: MyX::Generic::Undef::Param
+	Comments: Note that the order of the returned aref is random
 	See Also: NA
 
 

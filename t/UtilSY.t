@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 39;
+use Test::More tests => 51;
 use Test::Exception;
 
 # others to include
@@ -13,6 +13,8 @@ BEGIN { use_ok( 'UtilSY', qw(to_bool) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_ref) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_file) ); }
 BEGIN { use_ok( 'UtilSY', qw(load_lines) ); }
+BEGIN { use_ok( 'UtilSY', qw(aref_to_href) ); }
+BEGIN { use_ok( 'UtilSY', qw(href_to_aref) ); }
 BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 
 
@@ -112,4 +114,45 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
     is_deeply(load_lines($temp_file, "\t"), \@exp, "load_lines(temp_file) -- tab sep" );
 }
 
+# test aref_to_href
+{
+    throws_ok( sub{ aref_to_href() },
+              'MyX::Generic::Undef::Param', "throws -- aref_to_href()" );
+    
+    throws_ok( sub{ aref_to_href(4) },
+              'MyX::Generic::Ref::UnsupportedType', "throws -- aref_to_href(4)" );
+    
+    my @arr = (1,2,3,4,5);
+    my $href;
+    my %exp_hash = (1 => 1, 2=>1, 3=>1, 4=>1, 5=>1);
+    lives_ok( sub{ $href = aref_to_href(\@arr) },
+             "expected to live -- aref_to_href(aref)" );
+    is_deeply($href, \%exp_hash, "aref_to_href(aref) -- check values" );
+}
+
+# test href_to_aref
+{
+    throws_ok( sub{ href_to_aref() },
+              'MyX::Generic::Undef::Param', "throws -- href_to_aref()" );
+    
+    throws_ok( sub{ href_to_aref(4) },
+              'MyX::Generic::Ref::UnsupportedType', "throws -- href_to_aref(4)" );
+    
+    my %hash = (1=>1, 2=>1, 3=>1);
+    my $aref;
+    my @exp1 = (1, 2, 3);
+    lives_ok( sub{ $aref = href_to_aref(\%hash) },
+             "expected to live -- href_to_aref(href)" );
+    
+    # note that the aref is returned in a random order.  so here I just sort it
+    # to make it match the expected order from the hash
+    my @arr = sort @{$aref};
+    is_deeply(\@arr, \@exp1, "href_to_aref(href) -- check values" );
+    
+    # test when I want to get the values
+    lives_ok( sub{ $aref = href_to_aref(\%hash, "T") },
+             "expected to live -- href_to_aref(href, T)" );
+    my @exp2 = (1,1,1);
+    is_deeply($aref, \@exp2, "href_to_aref(href, T) -- check values" );
+}
 
