@@ -410,6 +410,7 @@ None reported.
 	Args: -aref => array reference
 	      [-val => value to be associated with each key in the href]
 	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Ref::UnsupportedType
 	Comments: The defualt $val is 1.  Note that each key in the href will be set
 			  to val.
 	See Also: NA
@@ -423,7 +424,33 @@ None reported.
 	Args: -href => hash reference
 	      [-vals => boolean indicating to return the values instead of keys]
 	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Ref::UnsupportedType
 	Comments: Note that the order of the returned aref is random
+	See Also: NA
+	
+=head2 aref_to_str
+
+	Title: aref_to_str
+	Usage: aref_to_str($aref, $vsep)
+	Function: Converts the contents of an array reference to a string
+	Returns: string
+	Args: -aref => array reference
+	      [-vsep => delimitor to seperate values]
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Ref::UnsupportedType
+	Comments: The defualt $sep is "\n".
+	See Also: NA
+	
+=head2 href_to_str
+
+	Title: href_to_str
+	Usage: href_to_str($aref, $vals)
+	Function: Converts the contents of a hash reference to string
+	Returns: string
+	Args: -href => hash reference
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Ref::UnsupportedType
+	Comments: Note that the keys are sorted before returning
 	See Also: NA
 
 
