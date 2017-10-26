@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 51;
+use Test::More tests => 63;
 use Test::Exception;
 
 # others to include
@@ -15,6 +15,8 @@ BEGIN { use_ok( 'UtilSY', qw(check_file) ); }
 BEGIN { use_ok( 'UtilSY', qw(load_lines) ); }
 BEGIN { use_ok( 'UtilSY', qw(aref_to_href) ); }
 BEGIN { use_ok( 'UtilSY', qw(href_to_aref) ); }
+BEGIN { use_ok( 'UtilSY', qw(aref_to_str) ); }
+BEGIN { use_ok( 'UtilSY', qw(href_to_str) ); }
 BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 
 
@@ -154,5 +156,43 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
              "expected to live -- href_to_aref(href, T)" );
     my @exp2 = (1,1,1);
     is_deeply($aref, \@exp2, "href_to_aref(href, T) -- check values" );
+}
+
+# test aref_to_str
+{
+    throws_ok( sub{ aref_to_str() },
+              'MyX::Generic::Undef::Param', "throws -- aref_to_str()" );
+    
+    throws_ok( sub{ aref_to_str(4) },
+              'MyX::Generic::Ref::UnsupportedType', "throws -- aref_to_str(4)" );
+    
+    my @arr = (1,2,3,4,5);
+    my $str;
+    my $exp_str = ("1\n2\n3\n4\n5");
+    lives_ok( sub{ $str = aref_to_str(\@arr) },
+             "expected to live -- aref_to_str(aref)" );
+    is($str, $exp_str, "aref_to_str(aref) -- check str" );
+    
+    # test the seperater
+    $exp_str = ("1\t2\t3\t4\t5");
+    lives_ok( sub{ $str = aref_to_str(\@arr, "\t") },
+             "expected to live -- aref_to_str(aref)" );
+    is($str, $exp_str, "aref_to_str(aref) -- check str" );
+}
+
+# test href_to_str
+{
+    throws_ok( sub{ href_to_str() },
+              'MyX::Generic::Undef::Param', "throws -- href_to_str()" );
+    
+    throws_ok( sub{ href_to_str(4) },
+              'MyX::Generic::Ref::UnsupportedType', "throws -- href_to_str(4)" );
+    
+    my %hash = (1=>1, 2=>1, 3=>1);
+    my $str;
+    my $exp_str = "1 => 1\n2 => 1\n3 => 1";
+    lives_ok( sub{ $str = href_to_str(\%hash) },
+             "expected to live -- href_to_str(href)" );
+    is($str, $exp_str, "href_to_str(href) --check str");
 }
 

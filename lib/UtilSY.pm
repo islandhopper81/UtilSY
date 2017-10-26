@@ -11,7 +11,7 @@ use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines aref_to_href href_to_aref);
+our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines aref_to_href href_to_aref aref_to_str href_to_str);
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -35,6 +35,8 @@ my $logger = get_logger();
 	sub load_lines;
 	sub aref_to_href;
 	sub href_to_aref;
+	sub aref_to_str;
+	sub href_to_str;
 
 
 
@@ -218,6 +220,35 @@ my $logger = get_logger();
 		}
 		
 		return(\@arr);
+	}
+	
+	sub aref_to_str {
+		my ($aref, $sep) = @_;
+		
+		check_defined($aref);
+		check_ref($aref, "ARRAY");
+		
+		if ( ! is_defined($sep) ) {
+			$sep = "\n";
+		}
+		
+		return( join("$sep", @{$aref}) );
+	}
+	
+	sub href_to_str {
+		my ($href, $sep) = @_;
+		
+		check_defined($href);
+		check_ref($href, "HASH");
+		
+		# I automatically sort by key
+		my @lines = ();
+		foreach my $key ( sort keys %{$href} ) {
+			my $str = $key . " => " . $href->{$key};
+			push @lines, $str; 
+		}
+		
+		return( join("\n", @lines) );
 	}
 }
 
