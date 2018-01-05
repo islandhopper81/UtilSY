@@ -7,7 +7,6 @@ use Class::Std::Utils;
 use Data::Dumper;
 use List::MoreUtils qw(any);
 use Log::Log4perl qw(:easy);
-use Log::Log4perl::CommandLine qw(:all);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
