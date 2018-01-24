@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 63;
+use Test::More tests => 82;
 use Test::Exception;
 
 # others to include
@@ -12,6 +12,12 @@ BEGIN { use_ok( 'UtilSY', qw(check_defined) ); }
 BEGIN { use_ok( 'UtilSY', qw(to_bool) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_ref) ); }
 BEGIN { use_ok( 'UtilSY', qw(check_file) ); }
+BEGIN { use_ok( 'UtilSY', qw(check_input_file) ); }
+BEGIN { use_ok( 'UtilSY', qw(check_output_file) ); }
+BEGIN { use_ok( 'UtilSY', qw(file_is_readable) ); }
+BEGIN { use_ok( 'UtilSY', qw(file_is_writable) ); }
+BEGIN { use_ok( 'UtilSY', qw(file_exists) ); }
+BEGIN { use_ok( 'UtilSY', qw(file_not_empty) ); }
 BEGIN { use_ok( 'UtilSY', qw(load_lines) ); }
 BEGIN { use_ok( 'UtilSY', qw(aref_to_href) ); }
 BEGIN { use_ok( 'UtilSY', qw(href_to_aref) ); }
@@ -89,6 +95,93 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
     close($temp_fh);
     lives_ok( sub{ check_file($temp_file) },
              "expected to live -- check_file(temp_file)" );
+}
+
+# test file_exists
+{
+    throws_ok( sub{ file_exists() },
+              'MyX::Generic::Undef::Param', "throws -- file_exists()" );
+    throws_ok( sub{ file_exists("blah") },
+              'MyX::Generic::DoesNotExist::File',
+              "throws -- file_exists(blah)" );
+}
+
+# test file_is_readable - tests incomplete
+{
+    throws_ok( sub{ file_is_readable() },
+              'MyX::Generic::Undef::Param', "throws -- file_is_readable()" );
+	
+	# I don't know how I can really test this without causing a problem
+	# of me not being able to remove the file I create.
+	my ($temp_fh, $temp_file) = tempfile();
+	close($temp_fh);
+	lives_ok( sub{ file_is_readable($temp_file) },
+			 "expected to live -- file_is_readable($temp_file)" );
+}
+
+# test file_not_empty - tests incomplete
+{
+    throws_ok( sub{ file_not_empty() },
+              'MyX::Generic::Undef::Param', "throws -- file_not_empty()" );
+	
+	# I don't know how I can really test this without causing a problem
+	# of me not being able to remove the file I create.
+	my ($temp_fh, $temp_file) = tempfile();
+	
+	throws_ok( sub{ file_not_empty("blah") },
+              'MyX::Generic::File::Empty',
+              "throws -- file_not_empty($temp_file)" );
+	
+	print $temp_fh "hello scott\n";
+	close($temp_fh);
+	
+	lives_ok( sub{ file_not_empty($temp_file) },
+			 "expected to live -- file_not_empty($temp_file)" );
+}
+
+# test check_input_file
+{
+	# check if the file exists
+    throws_ok( sub{ check_input_file() },
+              'MyX::Generic::Undef::Param', "throws -- check_input_file()" );
+    throws_ok( sub{ check_input_file("blah") },
+              'MyX::Generic::DoesNotExist::File',
+              "throws -- check_input_file(blah)" );
+    
+	# check if the file is empty
+    my ($temp_fh, $temp_file) = tempfile();
+    throws_ok( sub{ check_input_file($temp_file) },
+              'MyX::Generic::File::Empty',
+              "throws -- check_input_file($temp_file)" );
+	
+	# Unfortunately, I don't explicetly test if the file is readable
+	# because I'm not entirely sure how to do that
+    
+	# check a correct input file
+    print $temp_fh "test";
+    close($temp_fh);
+    lives_ok( sub{ check_input_file($temp_file) },
+             "expected to live -- check_input_file($temp_file)" );
+}
+
+# test file_is_writable
+{
+	# check if the file is writable
+    throws_ok( sub{ file_is_writable() },
+              'MyX::Generic::Undef::Param',
+			  "throws -- file_is_writable()" );
+
+	my ($temp_fh, $temp_file) = tempfile();
+	close($temp_fh);
+	`chmod 444 $temp_file`;
+	throws_ok( sub{ file_is_writable($temp_file) },
+			  'MyX::Generic::File::Unwritable',
+			  "throws -- file_is_writable($temp_file)" );
+}
+
+# test check_output_file
+{
+	;
 }
 
 # test load_lines

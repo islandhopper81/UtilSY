@@ -10,7 +10,12 @@ use Log::Log4perl qw(:easy);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = qw( is_defined check_defined to_bool check_ref check_file load_lines aref_to_href href_to_aref aref_to_str href_to_str);
+our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool',
+				   'check_ref',
+				   'check_file', 'check_input_file', 'check_output_file', 'file_is_readable', 'file_not_empty', 'file_exists', 'file_is_writable',
+				   'load_lines',
+				   'aref_to_href', 'href_to_aref', 'aref_to_str',
+				   'href_to_str');
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -30,7 +35,13 @@ my $logger = get_logger();
 	sub check_defined;
 	sub to_bool;
 	sub check_ref;
-	sub check_file;
+	sub check_file; # DEPRECITATED
+	sub check_input_file;
+	sub check_output_file;
+	sub file_is_readable;
+	sub file_is_writable;
+	sub file_not_empty;
+	sub file_exists;
 	sub load_lines;
 	sub aref_to_href;
 	sub href_to_aref;
@@ -124,14 +135,16 @@ my $logger = get_logger();
 		return 1;
 	}
 	
-	sub check_file {
+	sub check_file { # DEPRECIATED
 		my ($file) = @_;
+		
+		# this function is depreciated!
 		
 		# check if the file parameter is defined
 		check_defined($file, "file");
 		
 		# check if the file exists
-		if ( ! -f $file ) {
+		if ( ! -e $file ) {
 			MyX::Generic::DoesNotExist::File->throw(
 				error => "File ($file) does not exist"
 			)
@@ -141,6 +154,79 @@ my $logger = get_logger();
 		if ( ! -s $file ) {
 			MyX::Generic::File::Empty->throw(
 				error => "File ($file) is empty"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub check_input_file {
+		my ($file) = @_;
+		
+		check_defined($file, "file");
+		file_exists($file);
+		file_is_readable($file);
+		file_not_empty($file);
+		
+		return 1;
+	}
+	
+	sub file_exists {
+		my ($file) = @_;
+		check_defined($file, "file");
+		
+		if ( ! -e $file ) {
+			MyX::Generic::DoesNotExist::File->throw(
+				error => "File ($file) does not exist"
+			)
+		}
+		
+		return 1;
+	}
+	
+	sub file_is_readable {
+		my ($file) = @_;
+		check_defined($file, "file");
+		
+		if ( ! -R $file ) {
+			MyX::Generic::File::Unreadable->throw(
+				error => "File ($file) is not readable"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub file_not_empty {
+		my ($file) = @_;
+		check_defined($file, "file");
+		
+		if ( ! -s $file ) {
+			MyX::Generic::File::Empty->throw(
+				error => "File ($file) is empty"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub check_output_file {
+		my ($file) = @_;
+
+		check_defined($file, "file");
+		file_is_writable($file);
+		
+		return 1;
+	}
+	
+	sub file_is_writable {
+		my ($file) = @_;
+		check_defined($file, "file");
+		
+		`touch $file`;
+		if ( ! -W $file ) {
+			MyX::Generic::File::Unwritable->throw(
+				error => "File ($file) is unwritable"
 			);
 		}
 		
@@ -310,7 +396,13 @@ None reported.
 	check_defined
 	to_bool
 	check_ref
-	check_file
+	check_file # DEPRECIATED
+	check_input_file
+	check_output_file
+	file_is_readable
+	file_is_writable
+	file_not_empty
+	file_exists
 	load_lines
 	aref_to_href
 	href_to_aref
@@ -373,12 +465,86 @@ None reported.
 
 	Title: check_file
 	Usage: check_file($file)
-	Function: checks a file to make sure it exists and is non-empty
+	Function: DEPRECIATED! checks a file to make sure it exists and is non-empty
 	Returns: 1 on success
 	Args: -file => file name or path
 	Throws: MyX::Generic::Undef::Param
 	        MyX::Generic::DoesNotExist::File
 			MyX::Generic::File::Empty
+	Comments: DEPRECIATED
+	See Also: NA
+	
+=head2 check_input_file
+
+	Title: check_input_file
+	Usage: check_input_file($file)
+	Function: checks a file to make sure it exists, is non-empty, and readable
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+	        MyX::Generic::DoesNotExist::File
+			MyX::Generic::File::Empty
+			MyX::Generic::File::Unreadable
+	Comments: NA
+	See Also: NA
+	
+=head2 check_output_file
+
+	Title: check_output_file
+	Usage: check_output_file($file)
+	Function: checks a file to make sure it is defined and is writable
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::File::Unwritable
+	Comments: NA
+	See Also: NA
+	
+=head2 file_exists
+
+	Title: file_exists
+	Usage: file_exists($file)
+	Function: checks a file to make sure it exists
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+	        MyX::Generic::DoesNotExist::File
+	Comments: NA
+	See Also: NA
+	
+=head2 file_is_readable
+
+	Title: file_is_readable
+	Usage: file_is_readable($file)
+	Function: checks a file to make sure it is readable
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::File::Unreadable
+	Comments: NA
+	See Also: NA
+	
+=head2 file_not_empty
+
+	Title: file_not_empty
+	Usage: file_not_empty($file)
+	Function: checks a file to make sure it is not empty
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::File::Empty
+	Comments: NA
+	See Also: NA
+	
+=head2 file_is_writable
+
+	Title: file_is_writable
+	Usage: file_is_writable($file)
+	Function: checks a file to make sure it is writable
+	Returns: 1 on success
+	Args: -file => file name or path
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::File::Unwritable
 	Comments: NA
 	See Also: NA
 	
