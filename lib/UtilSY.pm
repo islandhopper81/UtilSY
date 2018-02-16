@@ -164,23 +164,35 @@ my $logger = get_logger();
 	}
 	
 	sub check_input_file {
-		my ($file) = @_;
-		check_defined($file, "file");
+		my ($file, $name) = @_;
 		
-		file_exists($file);
-		file_is_readable($file);
-		file_not_empty($file);
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
+		
+		check_defined($file, $name);
+		
+		file_exists($file, $name);
+		file_is_readable($file, $name);
+		file_not_empty($file, $name);
 		
 		return 1;
 	}
 	
 	sub file_exists {
-		my ($file) = @_;
-		check_defined($file, "file");
+		my ($file, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
+		
+		check_defined($file, $name);
 		
 		if ( ! -e $file ) {
 			MyX::Generic::DoesNotExist::File->throw(
-				error => "File ($file) does not exist"
+				error => "$file ($name) does not exist"
 			)
 		}
 		
@@ -188,12 +200,18 @@ my $logger = get_logger();
 	}
 	
 	sub file_is_readable {
-		my ($file) = @_;
-		check_defined($file, "file");
+		my ($file, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
+		
+		check_defined($file, $name);
 		
 		if ( ! -R $file ) {
 			MyX::Generic::File::Unreadable->throw(
-				error => "File ($file) is not readable"
+				error => "$file ($name) is not readable"
 			);
 		}
 		
@@ -201,12 +219,18 @@ my $logger = get_logger();
 	}
 	
 	sub file_not_empty {
-		my ($file) = @_;
-		check_defined($file, "file");
+		my ($file, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
+		
+		check_defined($file, $name);
 		
 		if ( ! -s $file ) {
 			MyX::Generic::File::Empty->throw(
-				error => "File ($file) is empty"
+				error => "$file ($name) is empty"
 			);
 		}
 		
@@ -214,22 +238,33 @@ my $logger = get_logger();
 	}
 	
 	sub check_output_file {
-		my ($file) = @_;
+		my ($file, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
 
-		check_defined($file, "file");
-		file_is_writable($file);
+		check_defined($file, $name);
+		file_is_writable($file, $name);
 		
 		return 1;
 	}
 	
 	sub file_is_writable {
-		my ($file) = @_;
-		check_defined($file, "file");
+		my ($file, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "File"
+		}
+		
+		check_defined($file, $name);
 		
 		`touch $file`;
 		if ( ! -W $file ) {
 			MyX::Generic::File::Unwritable->throw(
-				error => "File ($file) is unwritable"
+				error => "$file ($name) is unwritable"
 			);
 		}
 		
@@ -237,23 +272,35 @@ my $logger = get_logger();
 	}
 	
 	sub check_out_dir {
-		my ($dir) = @_;
-		check_defined($dir, "dir");
+		my ($dir, $name) = @_;
 		
-		dir_exists($dir);
-		is_dir($dir);
-		dir_is_writable($dir);
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "Dir"
+		}
+		
+		check_defined($dir, $name);
+		
+		dir_exists($dir, $name);
+		is_dir($dir, $name);
+		dir_is_writable($dir, $name);
 		
 		return 1;
 	}
 	
 	sub dir_exists {
-		my ($dir) = @_;
-		check_defined($dir, "dir");
+		my ($dir, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "Dir"
+		}
+		
+		check_defined($dir, $name);
 		
 		if ( ! -e $dir ) {
 			MyX::Generic::Dir::DoesNotExist->throw(
-				error => "Dir ($dir) does not exist"
+				error => "$dir ($name) does not exist"
 			);
 		}
 		
@@ -261,12 +308,18 @@ my $logger = get_logger();
 	}
 	
 	sub is_dir {
-		my ($dir) = @_;
-		check_defined($dir, "dir");
+		my ($dir, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "Dir"
+		}
+		
+		check_defined($dir, $name);
 		
 		if ( ! -d $dir ) {
 			MyX::Generic::Dir::NotADir->throw(
-				error => "Dir ($dir) is not a directory"
+				error => "$dir ($name) is not a directory"
 			);
 		}
 		
@@ -274,12 +327,18 @@ my $logger = get_logger();
 	}
 	
 	sub dir_is_writable {
-		my ($dir) = @_;
-		check_defined($dir, "dir");
+		my ($dir, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "Dir"
+		}
+		
+		check_defined($dir, $name);
 		
 		if ( ! -w $dir ) {
 			MyX::Generic::Dir::Unwritable->throw(
-				error => "Dir ($dir) is not writable"
+				error => "$dir ($name) is not writable"
 			);
 		}
 		
@@ -456,9 +515,15 @@ None reported.
 	file_is_writable
 	file_not_empty
 	file_exists
+	check_out_dir
+	dir_exists
+	is_dir
+	dir_is_writable
 	load_lines
 	aref_to_href
 	href_to_aref
+	aref_to_str
+	href_to_str
 
 =back
 
@@ -516,7 +581,7 @@ None reported.
 	
 =head2 check_file
 
-	Title: check_file
+	Title: check_file    # DEPRECIATED!
 	Usage: check_file($file)
 	Function: DEPRECIATED! checks a file to make sure it exists and is non-empty
 	Returns: 1 on success
@@ -530,75 +595,145 @@ None reported.
 =head2 check_input_file
 
 	Title: check_input_file
-	Usage: check_input_file($file)
+	Usage: check_input_file($file, $name)
 	Function: checks a file to make sure it exists, is non-empty, and readable
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 	        MyX::Generic::DoesNotExist::File
 			MyX::Generic::File::Empty
 			MyX::Generic::File::Unreadable
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
 	See Also: NA
 	
 =head2 check_output_file
 
 	Title: check_output_file
-	Usage: check_output_file($file)
+	Usage: check_output_file($file, $name)
 	Function: checks a file to make sure it is defined and is writable
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 			MyX::Generic::File::Unwritable
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
 	See Also: NA
 	
 =head2 file_exists
 
 	Title: file_exists
-	Usage: file_exists($file)
+	Usage: file_exists($file, $name)
 	Function: checks a file to make sure it exists
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 	        MyX::Generic::DoesNotExist::File
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
 	See Also: NA
 	
 =head2 file_is_readable
 
 	Title: file_is_readable
-	Usage: file_is_readable($file)
+	Usage: file_is_readable($file, $name)
 	Function: checks a file to make sure it is readable
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 			MyX::Generic::File::Unreadable
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
 	See Also: NA
 	
 =head2 file_not_empty
 
 	Title: file_not_empty
-	Usage: file_not_empty($file)
+	Usage: file_not_empty($file, $name)
 	Function: checks a file to make sure it is not empty
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 			MyX::Generic::File::Empty
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
 	See Also: NA
 	
 =head2 file_is_writable
 
 	Title: file_is_writable
-	Usage: file_is_writable($file)
+	Usage: file_is_writable($file, $name)
 	Function: checks a file to make sure it is writable
 	Returns: 1 on success
 	Args: -file => file name or path
+	      -name => argument name (ie --my_special_file)
 	Throws: MyX::Generic::Undef::Param
 			MyX::Generic::File::Unwritable
-	Comments: NA
+	Comments: The name argument defualts to "File". This was included to give a
+	          little more info about what the file is.
+	See Also: NA
+	
+=head2 check_out_dir
+
+	Title: check_out_dir
+	Usage: check_out_dir($dir, $name)
+	Function: checks a dir to make sure it exists, is a dir, and is writable
+	Returns: 1 on success
+	Args: -dir => dir name or path
+	      -name => argument name (ie --my_special_dir)
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Dir::NotADir
+			MyX::Generic::Dir::DoesNotExist
+			MyX::Generic::Dir::Unwritable
+	Comments: The name argument defualts to "Dir". This was included to give a
+	          little more info about what the dir is.
+	See Also: NA
+	
+=head2 dir_exists
+
+	Title: dir_exists
+	Usage: dir_exists($dir, $name)
+	Function: checks a dir to make sure it exists
+	Returns: 1 on success
+	Args: -dir => dir name or path
+	      -name => argument name (ie --my_special_dir)
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Dir::DoesNotExist
+	Comments: The name argument defualts to "Dir". This was included to give a
+	          little more info about what the dir is.
+	See Also: NA
+	
+=head2 is_dir
+
+	Title: is_dir
+	Usage: is_dir($dir, $name)
+	Function: checks a dir to make sure it is a dir
+	Returns: 1 on success
+	Args: -dir => dir name or path
+	      -name => argument name (ie --my_special_dir)
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Dir::NotADir
+	Comments: The name argument defualts to "Dir". This was included to give a
+	          little more info about what the dir is.
+	See Also: NA
+	
+=head2 dir_is_writable
+
+	Title: dir_is_writable
+	Usage: dir_is_writable($dir, $name)
+	Function: checks a dir to make sure it is writable
+	Returns: 1 on success
+	Args: -dir => dir name or path
+	      -name => argument name (ie --my_special_dir)
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::Dir::Unwritable
+	Comments: The name argument defualts to "Dir". This was included to give a
+	          little more info about what the dir is.
 	See Also: NA
 	
 =head2 load_lines
