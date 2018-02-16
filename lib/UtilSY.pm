@@ -10,12 +10,11 @@ use Log::Log4perl qw(:easy);
 use MyX::Generic;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
-our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool',
-				   'check_ref',
-				   'check_file', 'check_input_file', 'check_output_file', 'file_is_readable', 'file_not_empty', 'file_exists', 'file_is_writable',
-				   'load_lines',
-				   'aref_to_href', 'href_to_aref', 'aref_to_str',
-				   'href_to_str');
+our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
+				  'check_file', 'check_input_file', 'check_output_file', 'file_is_readable', 'file_not_empty', 'file_exists', 'file_is_writable',
+				  'check_out_dir', 'dir_exists', 'is_dir', 'dir_is_writable',
+				  'load_lines',
+				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str');
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -42,6 +41,10 @@ my $logger = get_logger();
 	sub file_is_writable;
 	sub file_not_empty;
 	sub file_exists;
+	sub check_out_dir;
+	sub dir_exists;
+	sub is_dir;
+	sub dir_is_writable;
 	sub load_lines;
 	sub aref_to_href;
 	sub href_to_aref;
@@ -162,8 +165,8 @@ my $logger = get_logger();
 	
 	sub check_input_file {
 		my ($file) = @_;
-		
 		check_defined($file, "file");
+		
 		file_exists($file);
 		file_is_readable($file);
 		file_not_empty($file);
@@ -227,6 +230,56 @@ my $logger = get_logger();
 		if ( ! -W $file ) {
 			MyX::Generic::File::Unwritable->throw(
 				error => "File ($file) is unwritable"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub check_out_dir {
+		my ($dir) = @_;
+		check_defined($dir, "dir");
+		
+		dir_exists($dir);
+		is_dir($dir);
+		dir_is_writable($dir);
+		
+		return 1;
+	}
+	
+	sub dir_exists {
+		my ($dir) = @_;
+		check_defined($dir, "dir");
+		
+		if ( ! -e $dir ) {
+			MyX::Generic::Dir::DoesNotExist->throw(
+				error => "Dir ($dir) does not exist"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub is_dir {
+		my ($dir) = @_;
+		check_defined($dir, "dir");
+		
+		if ( ! -d $dir ) {
+			MyX::Generic::Dir::NotADir->throw(
+				error => "Dir ($dir) is not a directory"
+			);
+		}
+		
+		return 1;
+	}
+	
+	sub dir_is_writable {
+		my ($dir) = @_;
+		check_defined($dir, "dir");
+		
+		if ( ! -w $dir ) {
+			MyX::Generic::Dir::Unwritable->throw(
+				error => "Dir ($dir) is not writable"
 			);
 		}
 		

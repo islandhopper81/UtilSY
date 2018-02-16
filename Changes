@@ -2,6 +2,8 @@ Revision history for UtilSY
 
 0.0.2	<ADD RELEASE DATE>
 		- made check_defined method and changed is_defined to return a bool
+		- added specific file checks
+		- added specific directory checks
 
 0.0.1  Sat Oct 29 10:25:29 2016
        Initial release.

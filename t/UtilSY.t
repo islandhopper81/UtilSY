@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 82;
+use Test::More tests => 96;
 use Test::Exception;
 
 # others to include
@@ -18,6 +18,9 @@ BEGIN { use_ok( 'UtilSY', qw(file_is_readable) ); }
 BEGIN { use_ok( 'UtilSY', qw(file_is_writable) ); }
 BEGIN { use_ok( 'UtilSY', qw(file_exists) ); }
 BEGIN { use_ok( 'UtilSY', qw(file_not_empty) ); }
+BEGIN { use_ok( 'UtilSY', qw(check_out_dir) ); }
+BEGIN { use_ok( 'UtilSY', qw(dir_exists) ); }
+BEGIN { use_ok( 'UtilSY', qw(dir_is_writable) ); }
 BEGIN { use_ok( 'UtilSY', qw(load_lines) ); }
 BEGIN { use_ok( 'UtilSY', qw(aref_to_href) ); }
 BEGIN { use_ok( 'UtilSY', qw(href_to_aref) ); }
@@ -183,6 +186,66 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 {
 	;
 }
+
+# test check_out_dir
+{
+	# NOTE: the functionality test for if the out_dir will
+	#		pass are done below.
+	throws_ok( sub{ check_out_dir() },
+              'MyX::Generic::Undef::Param', "throws -- check_out_dir()" );
+	
+	my $temp_dir = tempdir();
+	lives_ok( sub{ check_out_dir($temp_dir) },
+             "expected to live -- check_out_dir($temp_dir)" );
+}
+
+# test dir exists
+{
+	throws_ok( sub{ dir_exists() },
+              'MyX::Generic::Undef::Param', "throws -- dir_exists()" );
+    throws_ok( sub{ dir_exists("blah") },
+              'MyX::Generic::Dir::DoesNotExist',
+              "throws -- dir_exists(blah)" );
+	
+	my $temp_dir = tempdir();
+	lives_ok( sub{ dir_exists($temp_dir) },
+             "expected to live -- dir_exists($temp_dir)" );
+}
+
+# test is_dir
+{
+	throws_ok( sub{ is_dir() },
+              'MyX::Generic::Undef::Param', "throws -- is_dir()" );
+	
+	# create a temp file
+	my ($temp_fh, $temp_file) = tempfile();
+	close($temp_fh);
+	throws_ok( sub{ is_dir($temp_file) },
+              'MyX::Generic::Dir::NotADir',
+              "throws -- is_dir($temp_file) passing a file" );
+	
+	# create a temp dir
+	my $temp_dir = tempdir();
+	lives_ok( sub{ is_dir($temp_dir) },
+             "expected to live -- is_dir($temp_dir)" );
+}
+
+# test dir_is_writable
+{
+	throws_ok( sub{ is_dir() },
+              'MyX::Generic::Undef::Param', "throws -- dir_is_writable()" );
+
+	my $temp_dir = tempdir();
+	lives_ok( sub{ dir_is_writable($temp_dir) },
+             "expected to live -- dir_is_writable($temp_dir)" );
+	
+	`chmod 444 $temp_dir`;
+	throws_ok( sub{ dir_is_writable($temp_dir) },
+			  'MyX::Generic::Dir::Unwritable',
+			  "throws -- dir_is_writable($temp_dir)" );
+}
+
+
 
 # test load_lines
 {
