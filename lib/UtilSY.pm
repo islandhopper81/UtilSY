@@ -90,10 +90,15 @@ my $logger = get_logger();
 	}
 	
 	sub to_bool {
-		my ($val) = @_;
+		my ($val, $name) = @_;
+		
+		# set the name if not defined
+		if ( ! is_defined($name) ) {
+			$name = "Boolean"
+		}
 		
 		# make sure val is defined
-		check_defined($val, "boolean value");
+		check_defined($val, $name);
 		
 		# quick check to see if it is already a valid boolean
         if ( $val eq 1 or $val eq 0 ) {
@@ -116,7 +121,7 @@ my $logger = get_logger();
 		}
 		else {
 			MyX::Generic::BadValue->throw(
-				error => "Doesn't look like a boolean value: $bool"
+				error => "$bool ($name) doesn't look like a boolean value."
 			);
 		}
 		
@@ -556,14 +561,16 @@ None reported.
 =head2 to_bool
 
 	Title: to_bool
-	Usage: to_bool($val)
+	Usage: to_bool($val, $name)
 	Function: converts a boolean value to either 0 or 1
 	Returns: 0 or 1
 	Args: -val => a boolean value
+	      -name => argument name (ie --my_special_bool)
 	Throws: MyX::Generic::Undef::Param
 	        MyX::Generic::BadValue
 	Comments: Valid boolean values include: 0, 1, T, True, Y, Yes, F, False,
-			  No, and N.
+			  No, and N.  The name argument defualts to "Boolean". This was
+			  included to give a little more info about what the boolean is.
 	See Also: NA
 	
 =head2 check_ref
