@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 96;
+use Test::More tests => 99;
 use Test::Exception;
 
 # others to include
@@ -180,6 +180,22 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 	throws_ok( sub{ file_is_writable($temp_file) },
 			  'MyX::Generic::File::Unwritable',
 			  "throws -- file_is_writable($temp_file)" );
+}
+
+# test check_exe
+{
+	# check if an exe exists
+	throws_ok( sub{ check_exe() },
+			   'MyX::Generic::Undef::Param',
+			   "throws -- check_exe()" );
+
+	my $exe = "blah123344121";
+	throws_ok( sub{ check_exe($exe) },
+				'MyX::Generic::DoesNotExist::Exe',
+				"throws -- check_exe($exe)" );
+
+	lives_ok( sub{ check_exe("/bin/ls" ) },
+				"expected to live -- check_exe(ls)" );
 }
 
 # test check_output_file

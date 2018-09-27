@@ -13,6 +13,7 @@ use Exporter qw( import );
 our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
 				  'check_file', 'check_input_file', 'check_output_file', 'file_is_readable', 'file_not_empty', 'file_exists', 'file_is_writable',
 				  'check_out_dir', 'dir_exists', 'is_dir', 'dir_is_writable',
+			      'check_exe',
 				  'load_lines',
 				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str');
 our %EXPORT_TAGS = (
@@ -41,6 +42,7 @@ my $logger = get_logger();
 	sub file_is_writable;
 	sub file_not_empty;
 	sub file_exists;
+	sub check_exe;
 	sub check_out_dir;
 	sub dir_exists;
 	sub is_dir;
@@ -173,7 +175,7 @@ my $logger = get_logger();
 		
 		# set the name if not defined
 		if ( ! is_defined($name) ) {
-			$name = "File"
+			$name = "File";
 		}
 		
 		check_defined($file, $name);
@@ -190,7 +192,7 @@ my $logger = get_logger();
 		
 		# set the name if not defined
 		if ( ! is_defined($name) ) {
-			$name = "File"
+			$name = "File";
 		}
 		
 		check_defined($file, $name);
@@ -209,7 +211,7 @@ my $logger = get_logger();
 		
 		# set the name if not defined
 		if ( ! is_defined($name) ) {
-			$name = "File"
+			$name = "File";
 		}
 		
 		check_defined($file, $name);
@@ -228,7 +230,7 @@ my $logger = get_logger();
 		
 		# set the name if not defined
 		if ( ! is_defined($name) ) {
-			$name = "File"
+			$name = "File";
 		}
 		
 		check_defined($file, $name);
@@ -239,6 +241,25 @@ my $logger = get_logger();
 			);
 		}
 		
+		return 1;
+	}
+	
+	sub check_exe {
+		my ($exe, $name) = @_;
+
+		if ( ! is_defined($name) ) {
+			$name = "exe";
+		}
+
+		check_defined($exe, $name);
+
+		if ( ! -X $exe ) {
+			MyX::Generic::DoesNotExist::Exe->throw(
+				error => "Exectuable not found: $exe",
+				exe => $exe
+			);
+		}
+
 		return 1;
 	}
 	
@@ -520,6 +541,7 @@ None reported.
 	file_is_writable
 	file_not_empty
 	file_exists
+    check_exe
 	check_out_dir
 	dir_exists
 	is_dir
@@ -683,6 +705,20 @@ None reported.
 			MyX::Generic::File::Unwritable
 	Comments: The name argument defualts to "File". This was included to give a
 	          little more info about what the file is.
+	See Also: NA
+
+=head2 check_exe
+
+	Title: check_exe
+	Usage: check_exe($exe, $name)
+	Function: checks a exe to make sure it is executable
+	Returns: 1 on success
+	Args: -exe => exe path
+	      -name => argument name (ie --my_special_file)
+	Throws: MyX::Generic::Undef::Param
+			MyX::Generic::DoesNotExist::Exe
+	Comments: The name argument defualts to "exe". This was included to give a
+	          little more info about what the exe is.
 	See Also: NA
 	
 =head2 check_out_dir
