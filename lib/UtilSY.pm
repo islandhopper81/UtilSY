@@ -8,6 +8,7 @@ use Data::Dumper;
 use List::MoreUtils qw(any);
 use Log::Log4perl qw(:easy);
 use MyX::Generic;
+use DateTime;
 use version; our $VERSION = qv('0.0.2');
 use Exporter qw( import );
 our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
@@ -16,7 +17,7 @@ our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
 			      'check_exe',
 				  'load_lines',
 				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str',
-				  'get_datetime_fmt1',
+				  'get_datetime_fmt1', "runtime",
 				  'add_leading_char');
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
@@ -55,6 +56,7 @@ my $logger = get_logger();
 	sub aref_to_str;
 	sub href_to_str;
 	sub get_datetime_fmt1;
+	sub runtime;
 	sub add_leading_char;
 
 
@@ -485,8 +487,6 @@ my $logger = get_logger();
 		# The month is the string designation in caps (ie APR)
 		# The hour is a 24 hour clock
 		
-		require DateTime;
-
 		if ( ! is_defined($dt, "dt") ) {
 			$dt = DateTime->now();
 		}
@@ -506,6 +506,32 @@ my $logger = get_logger();
 		$str .= $hour . ":";
 		$str .= $minute . ":";
 		$str .= $second;
+
+		return($str);
+	}
+
+	sub runtime {
+		my ($dt1, $dt2) = @_;
+
+		# dt1 and $dt2 should be DateTime objects
+		check_defined($dt1, "dt1");
+		check_defined($dt2, "dt2");
+		check_ref($dt1, "DateTime");
+		check_ref($dt2, "DateTime");
+
+		my $t = $dt1 - $dt2;
+
+		if ( $t->is_negative() ) {
+			$t = $t->inverse();
+		}
+
+		# $t should be a DateTime::Duration object
+
+		my $str = $t->in_units('months') . " months; ";
+		$str .= $t->in_units('days') . " days; ";
+		$str .= $t->hours . " hours; ";
+		$str .= $t->minutes . " minutes; ";
+		$str .= $t->seconds . " seconds";
 
 		return($str);
 	}
@@ -580,6 +606,7 @@ UtilSY requires no configuration files or environment variables.
 	Log::Log4perl qw(:easy)
 	Log::Log4perl::CommandLine qw(:all)
 	MyX::Generic
+	DateTime
 	version our $VERSION = qv('0.0.2')
 	Exporter qw( import )
 
@@ -920,13 +947,28 @@ None reported.
 	Usage: get_datetime_fmt1($dt)
 	Function: Formats a DateTime object
 	Returns: string
-	Args: [-dt] => DateTime Object
+	Args: [-dt] => DateTime bject
 	Throws: MyX::Generic::Ref::UnsupportedType
 	Comments: The format of the returned string is:
 			  DDMMMYYYY HH:MM:SS
 			  where MMM the month abreviation and the time is
 			  given using a 24 hour clock
 	See Also: DateTime
+
+=head2 runtime1
+
+	Title: runtime1
+	Usage: runtime1($dt1, $dt2)
+	Function: Returns elapsed time
+	Returns: string
+	Args: -dt1 => DateTime object
+		  -dt2 => DateTime object
+	Throws: MyX::Generic::Under::Param
+		    MyX::Generic::Ref::UnsupportedType
+	Comments: I take the absolute value of the time change
+			  after subtracting dt1 from dt2.  So the order
+			  of dt1 and dt2 doesn't matter.
+	See Also: DateTime, DateTime::Duration
 
 =head2 add_leading_char
 
