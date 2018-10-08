@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 99;
+use Test::More tests => 117;
 use Test::Exception;
 
 # others to include
@@ -26,6 +26,9 @@ BEGIN { use_ok( 'UtilSY', qw(aref_to_href) ); }
 BEGIN { use_ok( 'UtilSY', qw(href_to_aref) ); }
 BEGIN { use_ok( 'UtilSY', qw(aref_to_str) ); }
 BEGIN { use_ok( 'UtilSY', qw(href_to_str) ); }
+BEGIN { use_ok( 'UtilSY', qw(get_datetime_fmt1) ); }
+BEGIN { use_ok( 'UtilSY', qw(runtime) ); }
+BEGIN { use_ok( 'UtilSY', qw(add_leading_char) ); }
 BEGIN { use_ok( 'UtilSY', qw(:all) ); }
 
 
@@ -368,3 +371,88 @@ BEGIN { use_ok( 'UtilSY', qw(:all) ); }
     is($str, $exp_str, "href_to_str(href) --check str");
 }
 
+# test get_datetime_fmt1
+{
+	# should die when given a non DateTime object
+	throws_ok( sub{ get_datetime_fmt1("a date") },
+			   'MyX::Generic::Ref::UnsupportedType',
+			   "throws -- get_datetime_fmt(a date)" );
+	
+	# should live with no $dt parameter
+	lives_ok( sub{ get_datetime_fmt1() },
+			  "expected to live -- get_datetime_fmt1()" );
+
+	my $dt = DateTime->new(
+		year       => 1964,
+   		month      => 10,
+    	day        => 06,
+    	hour       => 16,
+    	minute     => 12,
+    	second     => 47,
+	);
+	
+	is( get_datetime_fmt1($dt), "06OCT1964 16:12:47", 
+		"get_datetime_fmt1(06OCT1964 16:12:47)" );
+}
+
+# test runtime
+{
+	my $dt1 = DateTime->new(
+		year	=> 2017,
+		month 	=> 1,
+		day		=> 1,
+		hour 	=> 1,
+		minute	=> 1,
+		second 	=> 1
+	);
+
+	my $dt2 = DateTime->new(
+		year	=> 2018,
+		month	=> 2,
+		day		=> 2,
+		hour	=> 2,
+		minute 	=> 2,
+		second	=> 2
+	);
+	
+	# check for bad params
+	throws_ok( sub{ runtime() },
+			 	'MyX::Generic::Undef::Param',
+				"throws -- runtime()" );
+	throws_ok( sub{ runtime($dt1) },
+			 	'MyX::Generic::Undef::Param',
+				"throws -- runtime(dt1)" );
+	throws_ok( sub{ runtime($dt1, "str") },
+			 	'MyX::Generic::Ref::UnsupportedType',
+				"throws -- runtime(dt1, str)" );
+	
+	is( runtime($dt1, $dt2), "13 months; 1 days; 1 hours; 1 minutes; 1 seconds", 
+		"runtime(dt1, dt2)" );
+	is( runtime($dt2, $dt1), "13 months; 1 days; 1 hours; 1 minutes; 1 seconds", 
+		"runtime(dt2, dt1) -- inverse" );
+}
+
+# test add_leading_char
+{
+	# no parameters
+	throws_ok( sub{ add_leading_char() },
+			 	'MyX::Generic::Undef::Param',
+				"throws -- add_leading_char()" );
+	throws_ok( sub{ add_leading_char("str") },
+			 	'MyX::Generic::Undef::Param',
+				"throws -- add_leading_char(str)" );
+	throws_ok( sub{ add_leading_char("str", "0") },
+			 	'MyX::Generic::Undef::Param',
+				"throws -- add_leading_char(str,0)" );
+	
+	# bad count parameter
+	throws_ok( sub{ add_leading_char("str", "0", "a") },
+			   'MyX::Generic::Digit::MustBeDigit',
+			   "throws -- add_leading_char(str, 0, a) " );
+	throws_ok( sub{ add_leading_char("str", "0", 0.5) },
+			   'MyX::Generic::Digit::MustBeDigit',
+			   "throws -- add_leading_char(str, 0, 0.5) " );
+
+	is( add_leading_char("6", "0", 1), "6", "add_leading_char(6,0,1)" );
+	is( add_leading_char("6", "0", 2), "06", "add_leading_char(6,0,1)" );
+}

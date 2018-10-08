@@ -2,6 +2,7 @@ Revision history for UtilSY
 0.0.4	<ADD RELEASE DATE>
 		- not sure how 0.0.3 got skipped
 		- added check_exe function to check executables
+		- added functions for print time and time elapse
 
 0.0.2	<ADD RELEASE DATE>
 		- made check_defined method and changed is_defined to return a bool
