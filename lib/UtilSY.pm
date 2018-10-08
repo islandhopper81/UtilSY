@@ -15,7 +15,8 @@ our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
 				  'check_out_dir', 'dir_exists', 'is_dir', 'dir_is_writable',
 			      'check_exe',
 				  'load_lines',
-				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str');
+				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str',
+				  'get_datetime_fmt1');
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -52,7 +53,7 @@ my $logger = get_logger();
 	sub href_to_aref;
 	sub aref_to_str;
 	sub href_to_str;
-
+	sub get_datetime_fmt1;
 
 
 	###############
@@ -473,6 +474,39 @@ my $logger = get_logger();
 		
 		return( join("\n", @lines) );
 	}
+
+	sub get_datetime_fmt1 {
+		my ($dt) = @_;
+
+		# datetime should be a DateTime object
+		# fmt1 = DDMMMYYYY HH:MM:SS
+		# The month is the string designation in caps (ie APR)
+		# The hour is a 24 hour clock
+		
+		require DateTime;
+
+		if ( ! is_defined($dt, "dt") ) {
+			$dt = DateTime->now();
+		}
+
+		check_ref($dt, "DateTime");
+
+		# add a leading 0 to the day
+		my $day = $dt->day;
+		if ( $day =~ m/^\d$/ ) {
+			$day = "0" . $day;
+		}
+
+		my $str = $day;
+		$str .= uc($dt->month_abbr);  # make month all caps
+		$str .= $dt->year;
+		$str .= " ";
+		$str .= $dt->hour . ":";
+		$str .= $dt->minute . ":";
+		$str .= $dt->second;
+
+		return($str);
+	}
 }
 
 1; # Magic true value required at end of module
@@ -551,6 +585,7 @@ None reported.
 	href_to_aref
 	aref_to_str
 	href_to_str
+	get_datetime_fmt1
 
 =back
 
@@ -848,6 +883,20 @@ None reported.
 			MyX::Generic::Ref::UnsupportedType
 	Comments: Note that the keys are sorted before returning
 	See Also: NA
+
+=head2 get_datetime_fmt1
+
+	Title: get_datetime_fmt1
+	Usage: get_datetime_fmt1($dt)
+	Function: Formats a DateTime object
+	Returns: string
+	Args: [-dt] => DateTime Object
+	Throws: MyX::Generic::Ref::UnsupportedType
+	Comments: The format of the returned string is:
+			  DDMMMYYYY HH:MM:SS
+			  where MMM the month abreviation and the time is
+			  given using a 24 hour clock
+	See Also: DateTime
 
 
 =head1 BUGS AND LIMITATIONS
