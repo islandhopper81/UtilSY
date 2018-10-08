@@ -16,7 +16,8 @@ our @EXPORT_OK = ( 'is_defined', 'check_defined', 'to_bool', 'check_ref',
 			      'check_exe',
 				  'load_lines',
 				  'aref_to_href', 'href_to_aref', 'aref_to_str', 'href_to_str',
-				  'get_datetime_fmt1');
+				  'get_datetime_fmt1',
+				  'add_leading_char');
 our %EXPORT_TAGS = (
     'all' => \@EXPORT_OK,
 );
@@ -54,6 +55,7 @@ my $logger = get_logger();
 	sub aref_to_str;
 	sub href_to_str;
 	sub get_datetime_fmt1;
+	sub add_leading_char;
 
 
 	###############
@@ -491,20 +493,47 @@ my $logger = get_logger();
 
 		check_ref($dt, "DateTime");
 
-		# add a leading 0 to the day
-		my $day = $dt->day;
-		if ( $day =~ m/^\d$/ ) {
-			$day = "0" . $day;
-		}
+		# add a leading 0 to the day, hour, minute, and second
+		my $day = add_leading_char($dt->day, "0", 2);
+		my $hour = add_leading_char($dt->hour, "0", 2);
+		my $minute = add_leading_char($dt->minute, "0", 2);
+		my $second = add_leading_char($dt->second, "0", 2);
 
 		my $str = $day;
 		$str .= uc($dt->month_abbr);  # make month all caps
 		$str .= $dt->year;
 		$str .= " ";
-		$str .= $dt->hour . ":";
-		$str .= $dt->minute . ":";
-		$str .= $dt->second;
+		$str .= $hour . ":";
+		$str .= $minute . ":";
+		$str .= $second;
 
+		return($str);
+	}
+
+	sub add_leading_char {
+		my ($str, $char, $count) = @_;
+
+		# count is the length of the string you want returned
+		# NOT the lengh of the leading sequence.
+
+		check_defined($str);
+		check_defined($char);
+		check_defined($count);
+
+		# make sure count is a number
+		if ( $count !~ m/^\d+$/ ) {
+			MyX::Generic::Digit::MustBeDigit->throw(
+				error => "count must be a digit",
+				value => $count
+			);
+		}
+
+		my $len_to_add = $count - length $str;
+		if ( $len_to_add > 0 ) {
+			my $leader = "$char" x $len_to_add;
+			$str = $leader . $str;
+		}
+		
 		return($str);
 	}
 }
@@ -586,6 +615,7 @@ None reported.
 	aref_to_str
 	href_to_str
 	get_datetime_fmt1
+	add_leading_char
 
 =back
 
@@ -897,6 +927,25 @@ None reported.
 			  where MMM the month abreviation and the time is
 			  given using a 24 hour clock
 	See Also: DateTime
+
+=head2 add_leading_char
+
+	Title: add_leading_char1
+	Usage: add_leading_char1($str, $char, $count)
+	Function: Adds leading characters to a string
+	Returns: string
+	Args: -str => string
+          -char => leading char
+          -count => length of string after adding leader
+	Throws: MyX::Generic::Ref::UnsupportedType
+			MyX::Generic::Digit::MustBeDigit
+	Comments: $count is the desired length of the final string.
+			  So if you want the string returned from 
+			  add_leading_char to be 3 characters long and you 
+			  give it the $str of "aa" and $char of "b" it will
+			  return "baa".  If the length of $str is greater
+			  than or equal to $count no leader is added.
+	See Also: NA
 
 
 =head1 BUGS AND LIMITATIONS
